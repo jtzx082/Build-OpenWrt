@@ -32,7 +32,7 @@
 
 #### 固件下载:
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/kenzok78/Build-OpenWrt?style=for-the-badge&label=固件下载)](https://github.com/kenzok78/Build-OpenWrt/releases/latest)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/jtzx082/Build-OpenWrt?style=for-the-badge&label=固件下载)](https://github.com/jtzx082/Build-OpenWrt/releases/latest)
 
 #### 特色:
 
@@ -74,4 +74,4 @@
 + UPNP 自动端口转发
 + Turbo ACC 网络加速
 
-#### 默认后台地址 192.168.1.252, 密码 password
+#### 默认后台地址 192.168.5.1, 密码 password
