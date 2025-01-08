@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: openwrt_21.02
+name: openwrt_23.05
 
 on:
   repository_dispatch:
@@ -21,7 +21,7 @@ on:
 
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
-  REPO_BRANCH: openwrt-21.02
+  REPO_BRANCH: openwrt-23.05
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
@@ -42,7 +42,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     
     name: Build ${{matrix.target}}
     strategy:
@@ -118,14 +118,15 @@ jobs:
       id: package
       run: |
         cd openwrt
-        cp -f feeds/smpackage/diy/default-settings package/emortal/default-settings/files/99-default-settings
-        cp -f feeds/smpackage/diy/banner package/emortal/default-settings/files/banner
-        cp -f feeds/smpackage/diy/banner package/base-files/files/etc/banner
-        cp -Rf feeds/smpackage/diy/files/* files
-        sed -i 's/%D %V, %C/openwrt Jan by kenzo/g' package/emortal/default-settings/files/openwrt_banner
-        sed -i 's/%D %V, %C/openwrt Jan by kenzo/g' package/base-files/files/etc/banner
-        sed -i 's/v$date1/Jan/g' package/emortal/default-settings/files/99-default-settings
-        cp -f feeds/smpackage/diy/${{matrix.target}}.config .config && make defconfig
+        cp -f feeds/smpackage/.github/diy/default-settings package/emortal/default-settings/files/99-default-settings
+        rm -rf feeds/packages/net/{alist,adguardhome,brook,gost,mosdns,redsocks*,smartdns,trojan*,v2ray*,xray*}
+        rm -rf feeds/smpackage/luci-theme-design && git clone -b js --single-branch https://github.com/gngpp/luci-theme-design feeds/smpackage/luci-theme-design
+        sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
+        cp -f feeds/smpackage/.github/diy/banner package/base-files/files/etc/banner
+        sed -i "s/%D %V, %C/openwrt $(date +'%m.%d') by kenzo/g" package/base-files/files/etc/banner
+        cp -Rf feeds/smpackage/.github/diy/.packages/files/* files
+        ./scripts/feeds update -a && ./scripts/feeds install -a
+        cp -f feeds/smpackage/.github/diy/${{matrix.target}}.config .config && make defconfig
         make defconfig
         make download -j$(($(nproc)+1))
         find dl -size -1024c -exec ls -l {} \;
